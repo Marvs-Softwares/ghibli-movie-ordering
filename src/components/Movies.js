@@ -84,6 +84,7 @@ export default function Movies()
 
     return (
         <>
+        HELLO
         <div className="container">
         {/* Section 1 */}
         <div className="card trans-bg">
