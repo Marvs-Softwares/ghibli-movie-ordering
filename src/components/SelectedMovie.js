@@ -1,7 +1,9 @@
 import React from "react";
+import { useEffect, useState } from "react";
 
 export default function SelectedMovie({ movie, onOrderMovie, people})
 {
+
     return (
         <>
         {/* movie banner */}
@@ -23,6 +25,7 @@ export default function SelectedMovie({ movie, onOrderMovie, people})
             <p><b>Released:</b> {movie.release_date}</p>  
             <p><b>Directed by:</b> {movie.director}</p>
             <p><b>Produced by:</b> {movie.producer}</p>
+            <p><b>People:</b> {people}</p>
             <p><b>Run-time:</b> {movie.running_time} min</p>   
             <p className=""><b>Synopsis:</b> {movie.description}</p> 
             <button id="btn-add_order" className="btn" onClick={() => { onOrderMovie(movie); }}>Add to Cart</button>  

@@ -11,9 +11,9 @@ export default function Movies()
     const [movieList, setMovieList] = useState([]); // use to display all list
     const [selectedMovie, setSelectedMovie] = useState([]); //use to display user selected movie
     const [orderedMovie, setOrderedMovie] = useState([]); // use to display all ordered movie(s)
-    const [confirmOrder, setConfirmOrder] = useReducer((checked) => !checked, false); // checks the checkbox if the order is confirmed or not
+    const [confirmOrder, setConfirmOrder] = useReducer((checked) => !checked, false); // set default checkbox to false
     const [orderNotification, setOrderNotification] = useState(0); // use to display how many new items added to the cart
-
+    const [people, setPeople] = useState([]); // store people from the selected movie
     /* MAIN FUNCTIONS */
 
     // function for user selected movie
@@ -21,7 +21,17 @@ export default function Movies()
     {
         $('#movie-select').removeClass("hide");
         $('#movie-list').addClass("hide");
-        setSelectedMovie([ data ]); // user selected movie will be inserted here
+        setSelectedMovie([data]); // user selected movie will be inserted here
+
+        // use "Promise" to fetch multiple api
+        Promise.all(
+            data.people.map(url => 
+                fetch(url).then(response => response.json()) 
+            )
+        ).then(data => {
+            // setPeople(data.flat());
+            setPeople(data);
+        });
     }
 
     // function for user order movie(s)
@@ -49,9 +59,8 @@ export default function Movies()
     // remove items on the ordered list if necessary
     function onHandleDelete(movie_id)
     {
-        // check if ID is already exist in the array
-        // return those elements that is not equal to the ID and updates the "OrderedMovie" array afterwards. 
-        orderedMovie.map(data => setOrderedMovie(orderedMovie.filter(data => data.id !== movie_id)));
+        // return those elements that is not equal to the selected ID and updates the "OrderedMovie" array afterwards. 
+        setOrderedMovie(orderedMovie.filter(data => data.id !== movie_id));
     }
 
     useEffect(() => {     
@@ -66,9 +75,10 @@ export default function Movies()
         );
     }, [])
 
-    // get and deploy each elements from array or useState to the components
+    const movie_people = people.map((movie, index) => (<span key={index}>{movie.name}<i className="bi bi-dot fs-1"></i></span>));
+    // deploy each elements from array or useState to the components
     const movie_list = movieList.map((movie, index) => (<MovieList key={index} data={movie} onSelectMovie={onSelectMovie}/>));
-    const movie_selected = selectedMovie.map((movie, index) => (<SelectedMovie key={index} movie={movie} onOrderMovie={onOrderMovie}/>));
+    const movie_selected = selectedMovie.map((movie, index) => (<SelectedMovie key={index} movie={movie} onOrderMovie={onOrderMovie} people={movie_people }/>));
     const movie_ordered = orderedMovie.map((movie, index) => (<OrderedMovies key={index} data={movie} onDelete={onHandleDelete} />));
  
 

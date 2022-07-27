@@ -12,7 +12,7 @@ export default function OrderForm({ isConfirm, setConfirm, totalOrdered})
     function submitCustomer(e)
     {
         e.preventDefault();
-        // if the order is confirm and has added items, alert SUCESS!
+        // if the order is confirm and added items, alert SUCESS!
         if (isConfirm === true && totalOrdered.length !== 0) {
             alert("SUCCESS!" + '\n\n'+ "Thank you for ordering.");
             
@@ -25,8 +25,8 @@ export default function OrderForm({ isConfirm, setConfirm, totalOrdered})
             setConfirm(false); // set the checkbox back to false
 
             $('#movie-list').removeClass("hide"); //unhide section 2
-            $('#movie-order_form').addClass("hide"); //unhide section 2
-            totalOrdered.length = 0; //reset the array length back to zero
+            $('#movie-order_form').addClass("hide"); //unhide section 4
+            totalOrdered.length = 0; //set the array length back to zero to clear the order list
         }
 
         // if the order is not confirm, alert WARNING!
