@@ -84,7 +84,6 @@ export default function Movies()
 
     return (
         <>
-        HELLO branch
         <div className="container">
         {/* Section 1 */}
         <div className="card trans-bg">
