@@ -3,14 +3,17 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import Movies from './components/Movies';
 import './styles/utilities.css';
 import './App.css';
+import Movies from './components/Movies';
+import { BrowserRouter } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Movies />
+    <BrowserRouter>
+      <Movies />
+    </BrowserRouter>
   </React.StrictMode>
 );
 

@@ -1,11 +1,11 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import {Link} from "react-router-dom"
 
 export default function SelectedMovie({ movie, onOrderMovie, people})
 {
-
     return (
         <>
+        <div className="" id="movie-select">
         {/* movie banner */}
         <div >   
         <img src={movie.movie_banner} className="movie_image_banner" alt="movie banner"></img>
@@ -28,8 +28,9 @@ export default function SelectedMovie({ movie, onOrderMovie, people})
             <p><b>People:</b> {people}</p>
             <p><b>Run-time:</b> {movie.running_time} min</p>   
             <p className=""><b>Synopsis:</b> {movie.description}</p> 
-            <button id="btn-add_order" className="btn" onClick={() => { onOrderMovie(movie); }}>Add to Cart</button>  
+            <button id="btn-add_order" className="btn" onClick={() => { onOrderMovie(movie); }}>Add to Cart</button>
             </div>
+        </div>
         </div>
         </>
     )

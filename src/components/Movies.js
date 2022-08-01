@@ -4,23 +4,25 @@ import MovieList from "./MovieList";
 import SelectedMovie from "./SelectedMovie";
 import OrderForm from "./OrderForm";
 import $ from "jquery";
+import OrderList from "./OrderList";
+import Navbar from "./Navbar";
+import Orders from "./Orders";
+import { Routes, Route } from "react-router-dom";
 
 export default function Movies()
 {
     // Declared variables
     const [movieList, setMovieList] = useState([]); // use to display all list
     const [selectedMovie, setSelectedMovie] = useState([]); //use to display user selected movie
+    const [people, setPeople] = useState([]); // store people from the selected movie
     const [orderedMovie, setOrderedMovie] = useState([]); // use to display all ordered movie(s)
     const [confirmOrder, setConfirmOrder] = useReducer((checked) => !checked, false); // set default checkbox to false
-    const [orderNotification, setOrderNotification] = useState(0); // use to display how many new items added to the cart
-    const [people, setPeople] = useState([]); // store people from the selected movie
     /* MAIN FUNCTIONS */
 
     // function for user selected movie
     function onSelectMovie(data)
     {
         $('#movie-select').removeClass("hide");
-        $('#movie-list').addClass("hide");
         setSelectedMovie([data]); // user selected movie will be inserted here
 
         // use "Promise" to fetch multiple api
@@ -29,8 +31,7 @@ export default function Movies()
                 fetch(url).then(response => response.json()) 
             )
         ).then(data => {
-            // setPeople(data.flat());
-            setPeople(data);
+            setPeople(data); // store people from the selected mmovie
         });
     }
 
@@ -44,10 +45,6 @@ export default function Movies()
                 "SUCCESS!" + "\n\n" +
                 "'"+ data.title + "' successfully added to the list."
             )
-            $('#movie-select').addClass("hide"); // hide selected movie
-            $('#movie-list').removeClass("hide"); // unhide movie list
-            $('#order-badge').removeClass("hide"); // unhide cart notification
-            setOrderNotification(orderNotification + 1); // increment the current value
         } else {
             alert(
                 "WARNING!" + "\n\n" +
@@ -63,6 +60,7 @@ export default function Movies()
         setOrderedMovie(orderedMovie.filter(data => data.id !== movie_id));
     }
 
+    // useEffect will trigger anytime an update happens to the React component.
     useEffect(() => {     
         // fetch the API
         fetch(
@@ -75,55 +73,29 @@ export default function Movies()
         );
     }, [])
 
-    const movie_people = people.map((movie, index) => (<span key={index}>{movie.name}<i className="bi bi-dot fs-1"></i></span>));
     // deploy each elements from array or useState to the components
     const movie_list = movieList.map((movie, index) => (<MovieList key={index} data={movie} onSelectMovie={onSelectMovie}/>));
-    const movie_selected = selectedMovie.map((movie, index) => (<SelectedMovie key={index} movie={movie} onOrderMovie={onOrderMovie} people={movie_people }/>));
+    const movie_people = people.map((movie, index) => (<span key={index}>{movie.name}<i className="bi bi-dot fs-1"></i></span>));
+    const movie_selected = selectedMovie.map((movie, index) => (<SelectedMovie key={index} movie={movie} onOrderMovie={onOrderMovie} people={movie_people} />));
     const movie_ordered = orderedMovie.map((movie, index) => (<OrderedMovies key={index} data={movie} onDelete={onHandleDelete} />));
- 
 
     return (
         <>
-        <div className="container">
-        {/* Section 1 */}
-        <div className="card trans-bg">
-            <div className="card-image">
-                <img src={require("../img/R.png")} alt="ghibli logo" width="400" height="400"></img>
+            <div className="container mb-5">
+            <Navbar orderedMovie={orderedMovie} linkToForm={ linkToForm} />  
+
+            <div className="row" id="movie-list">
+            <Routes>
+                <Route path="/" element={movie_list}></Route>  
+                <Route path=":id" element={movie_selected}></Route>  
+                <Route path="cart" element={<OrderList movieOrderList={movie_ordered} orderMovie={orderedMovie} isConfirm={confirmOrder} setConfirm={setConfirmOrder} />}>
+                    <Route path="customer-info" element={<OrderForm isConfirm={confirmOrder} setConfirm={setConfirmOrder} totalOrdered={orderedMovie} />}></Route>  
+                </Route>   
+                <Route path="/orders" element={ <Orders />}></Route>               
+            </Routes>
             </div>
-        </div>
-        <div className="">
-            <button className="black-text mouse-pointer btn-flat" onClick={linkToHome}>Movies</button>
-            <button className="black-text mouse-pointer btn-flat" onClick={() => {linkToForm(); setOrderNotification(0);}}>Cart <span className="teal-text fs-3" id="order-badge">{orderedMovie.length === 0 ? "" : orderNotification}</span></button>
-        </div>
-        <hr />          
 
-        {/* Section 2 */}
-        <div className="row " id="movie-list">
-            {movie_list} 
-        </div>
-
-        {/* Section 3*/}
-        <div className="" id="movie-select">
-            {movie_selected}
-        </div>
-        
-                
-        {/* Section 4 */}
-        <div className="mb-5 hide" id="movie-order_form">
-            <h6 className="mt-3">Total Items: {orderedMovie.length}</h6>
-            <ul className="collection">
-            {movie_ordered} 
-            </ul>
-            <p>
-            <label>
-                <input type="checkbox" id="check-order" value={confirmOrder} onChange={setConfirmOrder}/>
-                <span className={confirmOrder ? "teal-text" : ""}>{confirmOrder ? "Order Confirmed" : "Order Pending"}</span>
-            </label>
-            </p>
-
-            <OrderForm isConfirm={confirmOrder} setConfirm={setConfirmOrder} totalOrdered={orderedMovie} />
-        </div>
-        </div>
+            </div>
         </>
     )
 }
@@ -153,10 +125,7 @@ function linkToHome()
 
 function linkToForm()
 {
-    $('#movie-list').addClass("hide"); // display
     $('#movie-select').addClass("hide"); // hide
-    $('#movie-order_form').removeClass("hide"); // display
-    $('#order-badge').addClass("hide"); // display
 }
 
 function dd(log)
